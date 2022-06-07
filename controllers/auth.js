@@ -1,9 +1,14 @@
+const { authUserGetUID } = require("../Database/authDB")
+const { getUserBasicData } = require("../Database/usuariosDB")
 const { generarJWT } = require("../helpers/jwt")
 
 const login = async (req, res) => {
     const {email, password} = req.body
 
-    if(email != 'correo@correo.com' || password != '123456')
+    
+    const authResult = await authUserGetUID(email, password)
+
+    if(!authResult)
     {
         return res.status(401).json({
             ok: false,
@@ -11,12 +16,13 @@ const login = async (req, res) => {
         })
     }
 
-    const uid = 1 
-    const token = await generarJWT(uid);
+    const token = await generarJWT(authResult);
+    const userData = await getUserBasicData(authResult)
 
     res.json({
         ok: true,
-        token
+        token,
+        userInfo: userData.recordset[0]
     })
 }
 

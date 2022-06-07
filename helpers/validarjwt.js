@@ -1,3 +1,4 @@
+require('dotenv').config()
 const jwt = require('jsonwebtoken')
 
 
@@ -12,7 +13,7 @@ const validarJWT = async (req, res, next) => {
     }
 
     try{
-        const {uid} = jwt.verify(token, 'key')
+        const {uid} = jwt.verify(token, process.env.SECRET_KEY)
 
         next()
     }

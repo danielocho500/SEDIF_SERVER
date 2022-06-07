@@ -1,9 +1,10 @@
 var jwt = require('jsonwebtoken');
+require('dotenv').config()
 
 const generarJWT = (uid) => {
     return new Promise((resolve, reject) =>{
         const payload = {uid}
-        jwt.sign(payload,'key',{
+        jwt.sign(payload,process.env.SECRET_KEY,{
             expiresIn: '2h'
         },(error, token) => {
             if(error){
