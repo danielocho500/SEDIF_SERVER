@@ -18,7 +18,12 @@ const generarJWT = (uid) => {
     })
 }
 
+const getUidByToken = (token) => {
+    return jwt.decode(token).uid
+}
+
 
 module.exports = {
-    generarJWT
+    generarJWT,
+    getUidByToken
 }

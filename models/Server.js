@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 
 class ServerSedif {
     constructor(){
@@ -9,7 +10,8 @@ class ServerSedif {
         //rutas
         this.estudiantesPath = '/api/estudiantes';
         this.formatosPath = '/api/formatos';
-        this.authPath = '/api/auth'
+        this.authPath = '/api/auth';
+        this.tramitesPath = '/api/tramite'
 
         this.middlewares();
         this.routes();
@@ -20,12 +22,18 @@ class ServerSedif {
         this.app.use(cors());
         this.app.use(express.json())
         this.app.use(require('body-parser').urlencoded({ extended: false }));
+
+        this.app.use(fileUpload({
+            useTempFiles : true,
+            tempFileDir : '/tmp/'
+        }));
     }
 
     routes(){
         this.app.use(this.estudiantesPath, require('../routes/estudiantes'));
         this.app.use(this.formatosPath, require('../routes/formatos'));
-        this.app.use(this.authPath, require('../routes/auth'))
+        this.app.use(this.authPath, require('../routes/auth'));
+        this.app.use(this.tramitesPath, require('../routes/tramites'))
     }
 
     listen(){

@@ -7,7 +7,7 @@ const getUserBasicData = async (uid) => {
         let user = await pool.request().query(`select * from dbo.Usuarios WHERE uid=${uid}`);
         if(user.rowsAffected[0] != 0){
             if(user.recordset[0].rol == 0){
-                let studentData = await pool.request().query(`SELECT rol, nombres, apellidos, nombre as Carrera, nombreRol from dbo.Usuarios US
+                const studentData = await pool.request().query(`SELECT rol, nombres, apellidos, nombre as Carrera, nombreRol from dbo.Usuarios US
                                                               INNER JOIN dbo.Estudiantes ES ON US.uid = ES.uid
                                                               INNER JOIN dbo.Programas PR ON PR.idPrograma = ES.programa
                                                               INNER JOIN dbo.Roles RO ON RO.idRol = US.rol
@@ -15,7 +15,12 @@ const getUserBasicData = async (uid) => {
                 return studentData
             }
             else{
-                //secretario
+                const secretaryData = await pool.request().query(`SELECT rol, nombres, apellidos, nombreRol from dbo.Usuarios US
+                                                                    INNER JOIN dbo.Secretarias SEC ON US.uid = SEC.uid
+                                                                    INNER JOIN dbo.Roles ROL ON ROL.idRol = US.rol
+                                                                    WHERE US.uid = ${uid}`)
+
+                return secretaryData
             }
         }
         else{
