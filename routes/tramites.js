@@ -1,7 +1,7 @@
 const {Router} = require('express');
 const { check } = require('express-validator');
 
-const { tramitePost, tramiteCambios, tramiteIncripcionPost } = require('../controllers/tramites');
+const { tramitePost, tramiteCambios, tramiteIncripcionPost, getTramiteWithToken} = require('../controllers/tramites');
 
 const { validarCampos } = require('../helpers/validar-campos');
 const { validarJWT } = require('../helpers/validarjwt');
@@ -23,5 +23,10 @@ router.post('/solicitudInscripcion', [
     validarJWT,
     validarCampos
 ], tramiteIncripcionPost)
+
+router.get('/', [
+    validarJWT,
+    validarCampos
+], getTramiteWithToken)
 
 module.exports = router;

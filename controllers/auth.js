@@ -3,6 +3,7 @@ const { getUserBasicData } = require("../Database/usuariosDB")
 const { generarJWT } = require("../helpers/jwt")
 
 const login = async (req, res) => {
+
     const {email, password} = req.body
     
     const authResult = await authUserGetUID(email, password)

@@ -9,6 +9,8 @@ const { registrarArchivoDeTramite } = require("../Database/registrarArchivo");
 const { existeTramite } = require("../Database/existeTramite");
 const { formatoAlta, formatoMovilidad } = require("../types/files");
 const { registrarTramiteCambios } = require("../Database/registrarTramiteCambios");
+const { registrarTramiteInsc } = require("../Database/registrarTramiteInscripcion");
+const { getTramiteEstudiante } = require("../Database/obtenerTramiteEstudiante");
 
 const tramitePost = async (req, res) => {
 
@@ -238,47 +240,36 @@ const tramiteIncripcionPost = async (req, res) => {
 	if (!req.files || Object.keys(req.files).length === 0) {
 		return res.status(400).send({
 			ok: false,
-			msg:'No files were uploaded.'
+			msg:'No se subieron archivos.'
 		});
 	}
 
-	if(!req.files.horarioClases || req.files.horarioClases.mimetype != 'application/pdf')
+	if(!req.files.horarioInscripcion || req.files.horarioInscripcion.mimetype != 'application/pdf')
 		return res.status(400).send({
 			ok: false,
-			msg: 'Falta el horario de clases o no esta en formato PDF'
+			msg: 'Falta el horario de clases de la inscripción o no esta en formato PDF'
 		})
 
 	files.push({
 		name: `${uniqid()}.pdf`,
-		type: fileTypes.horarioFirmado,
-		ref: req.files.horarioClases
+		type: fileTypes.horarioInscripcion,
+		ref: req.files.horarioInscripcion
 	})
 
-	if(!req.files.evaluacionDocente || req.files.evaluacionDocente.mimetype != 'application/pdf')
+	if(!req.files.solicitudInscripcion || req.files.solicitudInscripcion.mimetype != 'application/pdf')
 		return res.status(400).send({
 			ok: false,
-			msg: 'Falta la evaluación docente o no esta en formato PDF'
+			msg: 'Falta la solicitud de inscripción o no esta en formato PDF'
 		})
 
 	files.push({
 		name: `${uniqid()}.pdf`,
-		type: fileTypes.docEval,
-		ref: req.files.evaluacionDocente
+		type: fileTypes.solicitudIns,
+		ref: req.files.solicitudInscripcion
 	})
 
-	if(!req.files.comprobantePago || req.files.comprobantePago.mimetype != 'application/pdf')
-		return res.status(400).send({
-			ok: false,
-			msg: 'Falta el comprobante de pago o no esta en formato PDF'
-		})
-
-	files.push({
-		name: `${uniqid()}.pdf`,
-		type: fileTypes.voucher,
-		ref: req.files.comprobantePago
-	})
-
-	const resultTramite = await registrarTramiteNormal(uid);
+	//dasdas
+	const resultTramite = await registrarTramiteInsc(uid)
 
 	if(!resultTramite)
 		return res.status(500)({
@@ -294,9 +285,7 @@ const tramiteIncripcionPost = async (req, res) => {
 
 		crearPathFiles(uid)
 
-		const resultFile = await registrarArchivoDeTramite(resultTramite,dbPath, file.type);
-
-		console.log(resultFile)
+		await registrarArchivoDeTramite(resultTramite,dbPath, file.type);
 
 		ref.mv(uploadPath, function(err) {
 			if(err)
@@ -317,8 +306,30 @@ const tramiteIncripcionPost = async (req, res) => {
 	})
 }
 
+const getTramiteWithToken = async (req, res) => {
+	const uid = getUidByToken(req.header('x-token'));
+	const userData = await getUserBasicData(uid);
+
+	const rolUser = userData.recordset[0].rol
+
+	if(rolUser != 0)
+		return res.status(401).json({
+			ok: false,
+			msg: 'No tienes permiso para realizar esta operación'
+		})
+
+	const tramiteInfo = await getTramiteEstudiante(uid)
+
+	res.json({
+		ok: true,
+		...tramiteInfo
+	})
+
+}
+
 module.exports = {
 	tramitePost,
 	tramiteCambios,
-	tramiteIncripcionPost
+	tramiteIncripcionPost,
+	getTramiteWithToken
 }
