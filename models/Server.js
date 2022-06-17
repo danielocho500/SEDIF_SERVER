@@ -5,13 +5,14 @@ const fileUpload = require('express-fileupload');
 class ServerSedif {
     constructor(){
         this.app = express();
-        this.port = 7070
+        this.port = 7071
         
         //rutas
         this.estudiantesPath = '/api/estudiantes';
         this.formatosPath = '/api/formatos';
         this.authPath = '/api/auth';
         this.tramitesPath = '/api/tramite'
+        this.documentosPath = '/api/documentos'
 
         this.middlewares();
         this.routes();
@@ -33,7 +34,9 @@ class ServerSedif {
         this.app.use(this.estudiantesPath, require('../routes/estudiantes'));
         this.app.use(this.formatosPath, require('../routes/formatos'));
         this.app.use(this.authPath, require('../routes/auth'));
-        this.app.use(this.tramitesPath, require('../routes/tramites'))
+        this.app.use(this.tramitesPath, require('../routes/tramites'));
+        this.app.use(this.documentosPath, require('../routes/documentos'));
+
     }
 
     listen(){
