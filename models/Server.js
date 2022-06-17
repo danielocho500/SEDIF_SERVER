@@ -5,7 +5,7 @@ const fileUpload = require('express-fileupload');
 class ServerSedif {
     constructor(){
         this.app = express();
-        this.port = 7071
+        this.port = 7070
         
         //rutas
         this.estudiantesPath = '/api/estudiantes';
