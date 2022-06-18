@@ -16,6 +16,8 @@ const obtenerDocumentos = async (idTramite) => {
 
         const documents = docsData.recordset
 
+        console.log(documents)
+
         return {
             documents
         }

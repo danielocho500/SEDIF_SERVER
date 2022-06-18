@@ -1,10 +1,13 @@
-const formatosGet = (req, res) => {
+const { getFormatos } = require("../Database/obtenerFormatos")
+
+const formatosGet = async (req, res) => {
+
+    const formatosInfo = await getFormatos();
+
+    console.log(formatosInfo)
+
     res.json({
-        ok: true,
-        formatos: {
-            formatoId: 123,
-            nombre: "Formato actualización de datos"
-        }
+        ...formatosInfo
     })
 }
 
