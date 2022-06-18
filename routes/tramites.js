@@ -2,6 +2,7 @@ const {Router} = require('express');
 const { check } = require('express-validator');
 
 const { tramitePost, tramiteCambios, tramiteIncripcionPost, getTramiteWithToken} = require('../controllers/tramites');
+const { getTramitesSecretaria, getInfoTramite } = require('../controllers/tramitesSecretaria');
 
 const { validarCampos } = require('../helpers/validar-campos');
 const { validarJWT } = require('../helpers/validarjwt');
@@ -28,5 +29,17 @@ router.get('/', [
     validarJWT,
     validarCampos
 ], getTramiteWithToken)
+
+router.get('/secretaria', [
+    validarJWT,
+    validarCampos
+], getTramitesSecretaria)
+
+router.get('/documentos/:idTramite', [
+    validarJWT,
+    check('idTramite','el Trámite debe ser un numero').isNumeric(),
+    validarCampos
+], getInfoTramite)
+
 
 module.exports = router;
