@@ -34,7 +34,7 @@ const getTramiteEstudiante = async (uid) => {
             }
             else{
                 return {
-                    estadoEval: 1,
+                    estadoEval: 0,
                     periodo,
                     nombre,
                     dia,
@@ -46,7 +46,7 @@ const getTramiteEstudiante = async (uid) => {
         }
         else
             return {
-                estadoEval: 0
+                estadoEval: 1
             };
          
     }
