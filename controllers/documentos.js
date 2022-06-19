@@ -1,4 +1,4 @@
-const { d, documentosTramite } = require("../Database/obtenerDocumentosTramite");
+const { documentosTramite } = require("../Database/obtenerDocumentosTramite");
 const { getUserBasicData } = require("../Database/usuariosDB");
 const { getUidByToken } = require("../helpers/jwt");
 

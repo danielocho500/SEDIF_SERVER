@@ -11,9 +11,10 @@ class ServerSedif {
         this.estudiantesPath = '/api/estudiantes';
         this.formatosPath = '/api/formatos';
         this.authPath = '/api/auth';
-        this.tramitesPath = '/api/tramite'
-        this.documentosPath = '/api/documentos'
-        this.evaluacionPath = '/api/evaluaciones'
+        this.tramitesPath = '/api/tramite';
+        this.documentosPath = '/api/documentos';
+        this.evaluacionPath = '/api/evaluaciones';
+        this.archivosPath = '/api/archivos';
 
         this.middlewares();
         this.routes();
@@ -38,6 +39,7 @@ class ServerSedif {
         this.app.use(this.tramitesPath, require('../routes/tramites'));
         this.app.use(this.documentosPath, require('../routes/documentos'));
         this.app.use(this.evaluacionPath, require('../routes/evaluacion'));
+        this.app.use(this.archivosPath, require('../routes/archivos'));
     }
 
     listen(){
