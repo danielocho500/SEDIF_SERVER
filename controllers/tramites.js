@@ -14,6 +14,19 @@ const { getTramiteEstudiante } = require("../Database/obtenerTramiteEstudiante")
 
 const tramitePost = async (req, res) => {
 
+	const files = [{
+		nombre:'horarioClases',
+		tipo: fileTypes.horarioFirmado
+	},
+	{
+		nombre:'evaluacionDocente',
+		tipo: fileTypes.docEval
+	},
+	{
+		nombre:'comprobantePago',
+		tipo: fileTypes.voucher
+	}]
+
 	const uid = getUidByToken(req.header('x-token'));
 	const userData = await getUserBasicData(uid);
 
@@ -33,51 +46,6 @@ const tramitePost = async (req, res) => {
 			msg: 'Ya existe un tramite en el periodo actual'
 		})
 
-	let files = []
-
-	if (!req.files || Object.keys(req.files).length === 0) {
-		return res.status(400).send({
-			ok: false,
-			msg:'No files were uploaded.'
-		});
-	}
-
-	if(!req.files.horarioClases || req.files.horarioClases.mimetype != 'application/pdf')
-		return res.status(400).send({
-			ok: false,
-			msg: 'Falta el horario de clases o no esta en formato PDF'
-		})
-
-	files.push({
-		name: `${uniqid()}.pdf`,
-		type: fileTypes.horarioFirmado,
-		ref: req.files.horarioClases
-	})
-
-	if(!req.files.evaluacionDocente || req.files.evaluacionDocente.mimetype != 'application/pdf')
-		return res.status(400).send({
-			ok: false,
-			msg: 'Falta la evaluación docente o no esta en formato PDF'
-		})
-
-	files.push({
-		name: `${uniqid()}.pdf`,
-		type: fileTypes.docEval,
-		ref: req.files.evaluacionDocente
-	})
-
-	if(!req.files.comprobantePago || req.files.comprobantePago.mimetype != 'application/pdf')
-		return res.status(400).send({
-			ok: false,
-			msg: 'Falta el comprobante de pago o no esta en formato PDF'
-		})
-
-	files.push({
-		name: `${uniqid()}.pdf`,
-		type: fileTypes.voucher,
-		ref: req.files.comprobantePago
-	})
-
 	const resultTramite = await registrarTramiteNormal(uid);
 
 	if(!resultTramite)
@@ -86,38 +54,53 @@ const tramitePost = async (req, res) => {
 			msg: 'Error en el sistema'
 		})
 
+	crearPathFiles(uid)
 
-	files.forEach(async (file) => {
-		const {ref} = file;
-		const uploadPath = path.join(__dirname, `../../files/documents/${uid}`,file.name);
-		const dbPath = `files/documents/${uid}/${file.name}`
+	let archivosInfo = []
 
-		crearPathFiles(uid)
+	for(let i = 0; i < files.length ; i++){
+		const dbPath = `files/documents/${uid}/${uniqid()}.pdf`
+		const idArchivo = await registrarArchivoDeTramite(resultTramite,dbPath, files[i].tipo);
 
-		const resultFile = await registrarArchivoDeTramite(resultTramite,dbPath, file.type);
-
-		console.log(resultFile)
-
-		ref.mv(uploadPath, function(err) {
-			if(err)
-			try{
-				console.log(err)
-				return res.status(500).json({
-					ok: false,
-					msg: 'Error en el servidor'
-				})
-			}
-			catch{}	
+		archivosInfo.push({
+			idArchivo,
+			tipo: files[i].tipo,
+			dbPath
 		})
-	})
+	}
 
 	return res.json({
 		ok: true,
-		msg: 'Archivos subidos al sistema'
+		msg: 'Archivos subidos al sistema',
+		files: archivosInfo
 	})
 }
 
+
 const tramiteCambios = async (req, res) => {
+
+	const {formatoAlta = null, formatoBaja = null,formatoMovilidad = null} = req.body
+
+	const files =  []
+
+	if(formatoAlta)
+		files.push({
+			nombre:'formatoAlta',
+			tipo: fileTypes.formatoAlta
+		})
+	
+	if(formatoBaja)
+		files.push({
+			nombre:'formatoBaja',
+			tipo: fileTypes.formatoBaja
+		})
+	
+	if(formatoMovilidad)
+	files.push({
+		nombre:'formatoMovilidad',
+		tipo: fileTypes.formatoMovilidad
+	})
+	
 
 	const uid = getUidByToken(req.header('x-token'));
 	const userData = await getUserBasicData(uid);
@@ -139,43 +122,12 @@ const tramiteCambios = async (req, res) => {
 		})
 
 	
-	if (!req.files || Object.keys(req.files).length === 0) {
+	if (files.length == 0) {
 		return res.status(400).send({
 			ok: false,
-			msg:'No se mandaron archivos en la petición.'
+			msg:'se tiene que mandar por lo menos formatoAlta, formatoBaja o formatoMovilidad'
 		});
 	}
-
-	console.log(req.files.formatoAlta)
-
-	if((!req.files.formatoAlta || req.files.formatoAlta.mimetype != 'application/pdf') && (!req.files.formatoBaja || req.files.formatoBaja.mimetype != 'application/pdf') && (!req.files.formatoMovilidad || req.files.formatoMovilidad.mimetype && 'application/pdf'))
-		return res.status(400).send({
-			ok: false,
-			msg: 'se tiene que mandar por lo menos formatoAlta, formatoBaja o formatoMovilidad'
-		})
-
-	let files = []
-
-	if(req.files.formatoAlta &&  req.files.formatoAlta.mimetype == 'application/pdf')
-		files.push({
-			name: `${uniqid()}.pdf`,
-			type: fileTypes.formatoAlta,
-			ref: req.files.formatoAlta
-		})
-
-	if(req.files.formatoBaja &&  req.files.formatoBaja.mimetype == 'application/pdf')
-		files.push({
-			name: `${uniqid()}.pdf`,
-			type: fileTypes.formatoBaja,
-			ref: req.files.formatoBaja
-		})
-
-	if(req.files.formatoMovilidad &&  req.files.formatoMovilidad.mimetype == 'application/pdf')
-		files.push({
-			name: `${uniqid()}.pdf`,
-			type: fileTypes.formatoMovilidad,
-			ref: req.files.formatoMovilidad
-		})	
 
 	const resultTramite = await registrarTramiteCambios(uid)
 
@@ -185,36 +137,38 @@ const tramiteCambios = async (req, res) => {
 			msg: 'Error en el sistema'
 		})
 
+	crearPathFiles(uid)
 
-	files.forEach(async (file) => {
-		const {ref} = file;
-		const uploadPath = path.join(__dirname, `../../files/documents/${uid}`,file.name);
-		const dbPath = `files/documents/${uid}/${file.name}`
+	let archivosInfo = []
 
-		crearPathFiles(uid)
+	for(let i = 0; i < files.length ; i++){
+		const dbPath = `files/documents/${uid}/${uniqid()}.pdf`
+		const idArchivo = await registrarArchivoDeTramite(resultTramite,dbPath, files[i].tipo);
 
-		await registrarArchivoDeTramite(resultTramite,dbPath, file.type);
-
-		ref.mv(uploadPath, function(err) {
-			if(err)
-			try{
-				console.log(err)
-				return res.status(500).json({
-					ok: false,
-					msg: 'Error en el servidor'
-				})
-			}
-			catch{}	
+		archivosInfo.push({
+			idArchivo,
+			tipo: files[i].tipo,
+			dbPath
 		})
-	})
+	}
 
 	return res.json({
 		ok: true,
-		msg: 'Archivos subidos al sistema'
+		msg: 'Archivos subidos al sistema',
+		files: archivosInfo
 	})
 }
 
 const tramiteIncripcionPost = async (req, res) => {
+
+	const files = [{
+		nombre:'horarioInscripcion',
+		tipo: fileTypes.horarioInscripcion
+	},
+	{
+		nombre:'solicitudInscripcion',
+		tipo: fileTypes.docEval
+	}]
 
 	const uid = getUidByToken(req.header('x-token'));
 	const userData = await getUserBasicData(uid);
@@ -235,40 +189,6 @@ const tramiteIncripcionPost = async (req, res) => {
 			msg: 'Ya existe un tramite en el periodo actual'
 		})
 
-	let files = []
-
-	if (!req.files || Object.keys(req.files).length === 0) {
-		return res.status(400).send({
-			ok: false,
-			msg:'No se subieron archivos.'
-		});
-	}
-
-	if(!req.files.horarioInscripcion || req.files.horarioInscripcion.mimetype != 'application/pdf')
-		return res.status(400).send({
-			ok: false,
-			msg: 'Falta el horario de clases de la inscripción o no esta en formato PDF'
-		})
-
-	files.push({
-		name: `${uniqid()}.pdf`,
-		type: fileTypes.horarioInscripcion,
-		ref: req.files.horarioInscripcion
-	})
-
-	if(!req.files.solicitudInscripcion || req.files.solicitudInscripcion.mimetype != 'application/pdf')
-		return res.status(400).send({
-			ok: false,
-			msg: 'Falta la solicitud de inscripción o no esta en formato PDF'
-		})
-
-	files.push({
-		name: `${uniqid()}.pdf`,
-		type: fileTypes.solicitudIns,
-		ref: req.files.solicitudInscripcion
-	})
-
-	//dasdas
 	const resultTramite = await registrarTramiteInsc(uid)
 
 	if(!resultTramite)
@@ -277,32 +197,25 @@ const tramiteIncripcionPost = async (req, res) => {
 			msg: 'Error en el sistema'
 		})
 
+	crearPathFiles(uid)
 
-	files.forEach(async (file) => {
-		const {ref} = file;
-		const uploadPath = path.join(__dirname, `../../files/documents/${uid}`,file.name);
-		const dbPath = `files/documents/${uid}/${file.name}`
+	let archivosInfo = []
 
-		crearPathFiles(uid)
+	for(let i = 0; i < files.length ; i++){
+		const dbPath = `files/documents/${uid}/${uniqid()}.pdf`
+		const idArchivo = await registrarArchivoDeTramite(resultTramite,dbPath, files[i].tipo);
 
-		await registrarArchivoDeTramite(resultTramite,dbPath, file.type);
-
-		ref.mv(uploadPath, function(err) {
-			if(err)
-			try{
-				console.log(err)
-				return res.status(500).json({
-					ok: false,
-					msg: 'Error en el servidor'
-				})
-			}
-			catch{}	
+		archivosInfo.push({
+			idArchivo,
+			tipo: files[i].tipo,
+			dbPath
 		})
-	})
+	}
 
 	return res.json({
 		ok: true,
-		msg: 'Archivos subidos al sistema'
+		msg: 'Archivos subidos al sistema',
+		files: archivosInfo
 	})
 }
 
