@@ -24,7 +24,7 @@ const getTramiteEstudiante = async (uid) => {
                                                         WHERE TRA.idTramites = ${idTramite}`)
                                                 
             if(evalData.recordset[0]){
-                console.log(evalData.recordset[0])
+                //console.log(evalData.recordset[0])
             }
             else{
                 return {

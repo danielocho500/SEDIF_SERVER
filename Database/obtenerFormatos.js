@@ -22,6 +22,30 @@ const getFormatos = async () => {
     }
 }
 
+const getFormato = async (id) => {
+    try{
+        let pool = await sql.connect(sqlConfig);
+        const docFormato = await pool.request().query(`
+                                                        SELECT *
+                                                        FROM Formatos
+                                                        WHERE idFormato = ${id}
+                                                    `)
+
+        return {
+            ok: true,
+            formato: docFormato.recordset[0]
+        }
+    }
+    catch (err) {
+        console.log(err)
+        return {
+            ok: false,
+            err
+        }
+    }
+}
+
 module.exports = {
-    getFormatos
+    getFormatos,
+    getFormato
 }

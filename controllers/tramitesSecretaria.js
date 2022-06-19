@@ -41,8 +41,6 @@ const getInfoTramite = async (req, res) => {
 
     const {err, documents} = docs
 
-    console.log(documents)
-
     if(err)
         return res.status(500).json({
             ok: false,

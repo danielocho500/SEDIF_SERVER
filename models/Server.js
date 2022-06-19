@@ -13,6 +13,7 @@ class ServerSedif {
         this.authPath = '/api/auth';
         this.tramitesPath = '/api/tramite'
         this.documentosPath = '/api/documentos'
+        this.evaluacionPath = '/api/evaluaciones'
 
         this.middlewares();
         this.routes();
@@ -36,7 +37,7 @@ class ServerSedif {
         this.app.use(this.authPath, require('../routes/auth'));
         this.app.use(this.tramitesPath, require('../routes/tramites'));
         this.app.use(this.documentosPath, require('../routes/documentos'));
-
+        this.app.use(this.evaluacionPath, require('../routes/evaluacion'));
     }
 
     listen(){

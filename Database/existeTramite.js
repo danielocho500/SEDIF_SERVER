@@ -20,6 +20,21 @@ const existeTramite = async (uid) => {
     }
 }
 
+const existeTramiteId = async (idTramite) => {
+    try{
+        let pool = await sql.connect(sqlConfig);
+        let tramite = await pool.request().query(`SELECT * FROM Tramites 
+        WHERE idTramites = ${idTramite}`);
+
+        return (tramite.rowsAffected[0] != 0)
+    }
+    catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
 module.exports = {
-    existeTramite
+    existeTramite,
+    existeTramiteId
 }
