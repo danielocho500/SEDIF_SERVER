@@ -21,14 +21,20 @@ const getTramiteEstudiante = async (uid) => {
                                                         FROM Tramites TRA 
                                                         INNER JOIN Evaluaciones EVAL ON TRA.idTramites = EVAL.idTramite
                                                         INNER JOIN Status ST ON EVAL.status = ST.idStatus
-                                                        WHERE TRA.idTramites = ${idTramite}`)
-                                                
+                                                        WHERE TRA.idTramites = ${idTramite}`)                         
             if(evalData.recordset[0]){
-                //console.log(evalData.recordset[0])
+                return {
+                    estadoEval: evalData.recordset[0].status,
+                    periodo,
+                    nombre,
+                    dia,
+                    mes,
+                    anio
+                }
             }
             else{
                 return {
-                    estadoEval: 1,
+                    estadoEval: 0,
                     periodo,
                     nombre,
                     dia,
