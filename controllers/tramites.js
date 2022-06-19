@@ -162,10 +162,6 @@ const tramiteCambios = async (req, res) => {
 const tramiteIncripcionPost = async (req, res) => {
 
 	const files = [{
-		nombre:'horarioInscripcion',
-		tipo: fileTypes.horarioInscripcion
-	},
-	{
 		nombre:'solicitudInscripcion',
 		tipo: fileTypes.docEval
 	}]
