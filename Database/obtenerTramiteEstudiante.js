@@ -30,7 +30,8 @@ const getTramiteEstudiante = async (uid) => {
                     dia,
                     mes,
                     anio,
-                    observaciones: evalData.recordset[0].observaciones
+                    observaciones: evalData.recordset[0].observaciones,
+                    idTramite
                 }
             }
             else{
@@ -41,7 +42,8 @@ const getTramiteEstudiante = async (uid) => {
                     dia,
                     mes,
                     anio,
-                    observaciones: ""
+                    observaciones: "",
+                    idTramite
                 };
             }
 
