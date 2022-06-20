@@ -2,6 +2,7 @@ const {Router} = require('express');
 const { check } = require('express-validator');
 
 const { tramitePost, tramiteCambios, tramiteIncripcionPost, getTramiteWithToken} = require('../controllers/tramites');
+const { actualizarTramite } = require('../controllers/tramitesActualizar');
 const { getTramitesSecretaria, getInfoTramite } = require('../controllers/tramitesSecretaria');
 
 const { validarCampos } = require('../helpers/validar-campos');
@@ -9,11 +10,18 @@ const { validarJWT } = require('../helpers/validarjwt');
 
 const router = Router();
 
-
 router.post('/', [
     validarJWT,
     validarCampos
 ],tramitePost);
+
+router.put('/:idTramite', [
+    validarJWT,
+    check('idTramite','el Trámite debe ser un numero').isNumeric(),
+    check('valido','valido debe ser booleano').isBoolean(),
+    check('observaciones','las observaciones deben ser una cadena').isString(),
+    validarCampos
+], actualizarTramite)
 
 router.post('/solicitudCambios', [
     validarJWT,

@@ -14,9 +14,16 @@ const formatoGet = async (req, res) => {
 
     const formatoInfo = await getFormato(idFormato);
 
-    res.json({
-        formatoInfo
-    })
+    if(!formatoInfo.formato)
+        return res.json({
+            ok: false,
+            msg: 'Formato no existente'
+        })
+
+    else 
+        return res.json({
+            formatoInfo
+        })
 }
 
 module.exports = {
