@@ -20,12 +20,13 @@ const actualizarEvalCompleto = async (idEval,status, observaciones) => {
         console.log(idEval,status, observaciones)
         let pool = await sql.connect(sqlConfig)
         let eval = await pool.request().query(`UPDATE Evaluaciones SET
-                                                status = ${status}, observaciones = ${observaciones}
+                                                status = ${status}, observaciones = '${observaciones}'
                                                 WHERE idEvaluacion = ${idEval}`)
 
         return true
     }
     catch (error) {
+        console.log(error)
         return false
     }
 }

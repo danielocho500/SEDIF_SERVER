@@ -28,6 +28,10 @@ const postEvaluacion = async (req, res) => {
 
     if(id){
         await actualizarEvalCompleto(id,(valido) ? 3 : 2, observaciones)
+        return res.json({
+            ok: true,
+            msg: 'hehe'
+        })
     }
 
     let status = await obtenerStatus(idTramite)

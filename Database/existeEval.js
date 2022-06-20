@@ -7,10 +7,8 @@ const idEval = async (idTramite) => {
         let infoEval = await pool.request().query(`SELECT * FROM Evaluaciones
                                                 WHERE idTramite = ${idTramite}`)
 
-        if(infoEval.recordset[0])
-            return infoEval.recordset[0].idEvaluacion
-        else
-            return false
+        const {idEvaluacion = false} = infoEval.recordset[0]
+        return idEvaluacion
     }
     catch (error) {
         console.log(error)
