@@ -8,7 +8,7 @@ const idEval = async (idTramite) => {
                                                 WHERE idTramite = ${idTramite}`)
 
         const idEvaluacion = false;
-        if(inforEval.recordset)
+        if(infoEval.recordset)
             if(infoEval.recordset[0])
                 idEvaluacion = infoEval.recordset[0]
         return idEvaluacion
