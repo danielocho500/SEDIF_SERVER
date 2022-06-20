@@ -7,7 +7,10 @@ const idEval = async (idTramite) => {
         let infoEval = await pool.request().query(`SELECT * FROM Evaluaciones
                                                 WHERE idTramite = ${idTramite}`)
 
-        const {idEvaluacion = false} = infoEval.recordset[0]
+        const idEvaluacion = false;
+        if(inforEval.recordset)
+            if(infoEval.recordset[0])
+                idEvaluacion = infoEval.recordset[0]
         return idEvaluacion
     }
     catch (error) {
