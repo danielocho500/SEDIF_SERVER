@@ -9,7 +9,6 @@ const fileTypes = require("../types/files");
 
 const actualizarTramite = async (req, res) => {
     const {idTramite} = req.params
-    const {valido, observaciones} = req.body
 
 	const uid = getUidByToken(req.header('x-token'));
 	const userData = await getUserBasicData(uid);
@@ -33,7 +32,7 @@ const actualizarTramite = async (req, res) => {
     const statusTramite = await obtenerStatus(idTramite);
 
 
-    if(statusTramite != 2 && statusTramite != -1 && statusTramite != 4){
+    if(statusTramite != 2 && statusTramite != -1){
         return res.json({
             ok: false,
             msg: 'Status invalido'
@@ -46,8 +45,8 @@ const actualizarTramite = async (req, res) => {
 			msg: 'error en la base'
 		})
 	}
-
-	await actualizarEval(idTramite, statusTramite ,observaciones) 
+		
+	await actualizarEval(idTramite, 0)
 
     crearPathFiles(uid)
 

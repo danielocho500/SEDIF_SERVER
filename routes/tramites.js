@@ -18,8 +18,6 @@ router.post('/', [
 router.put('/:idTramite', [
     validarJWT,
     check('idTramite','el Trámite debe ser un numero').isNumeric(),
-    check('valido','valido debe ser booleano').isBoolean(),
-    check('observaciones','las observaciones deben ser una cadena').isString(),
     validarCampos
 ], actualizarTramite)
 
