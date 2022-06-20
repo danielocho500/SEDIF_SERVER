@@ -8,7 +8,6 @@ const { getUidByToken } = require("../helpers/jwt");
 const fileTypes = require("../types/files");
 
 const actualizarTramite = async (req, res) => {
-    console.log('wenass')
     const {idTramite} = req.params
     const {valido, observaciones} = req.body
 
@@ -34,7 +33,7 @@ const actualizarTramite = async (req, res) => {
     const statusTramite = await obtenerStatus(idTramite);
 
 
-    if(statusTramite != 2 && statusTramite != -1){
+    if(statusTramite != 2 && statusTramite != -1 && statusTramite != 4){
         return res.json({
             ok: false,
             msg: 'Status invalido'
@@ -48,12 +47,7 @@ const actualizarTramite = async (req, res) => {
 		})
 	}
 
-    if(valido){
-        actualizarEval(idTramite,3,observaciones)
-    }
-    else{
-        actualizarEval(idTramite,2,observaciones)
-    }
+	await actualizarEval(idTramite, statusTramite ,observaciones) 
 
     crearPathFiles(uid)
 
