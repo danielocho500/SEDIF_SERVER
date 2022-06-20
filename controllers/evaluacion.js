@@ -12,8 +12,6 @@ const postEvaluacion = async (req, res) => {
 
     const id = await idEval(idTramite)
 
-    console.log("id: "+id)
-
     if(id == -2)
         return res.status(500).json({
             ok:false,
